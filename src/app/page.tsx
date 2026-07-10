@@ -162,6 +162,70 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ── ONLINE MEETINGS ── */}
+      <section className="py-24 px-4 bg-gradient-to-b from-slate-50 to-white">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-12">
+            <p className="text-amber-500 font-bold text-sm tracking-widest uppercase mb-3">
+              ✦ {lang === "fa" ? "هر هفته" : "Every Week"}
+            </p>
+            <h2 className="text-4xl font-bold text-[#0f2554]">{t.home.online_title}</h2>
+            <div className="w-12 h-1 bg-amber-400 mx-auto mt-4 mb-4 rounded-full" />
+            <p className="text-gray-500">{t.home.online_subtitle}</p>
+          </div>
+
+          {/* Time badge */}
+          <div className="flex justify-center mb-10">
+            <div className="inline-flex items-center gap-2.5 bg-[#0f2554] text-white px-6 py-3 rounded-2xl shadow-lg text-sm font-medium">
+              <svg className="w-4 h-4 text-amber-300 shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              {t.home.online_time}
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Tuesday */}
+            <div className="group relative bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 rounded-3xl p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-t-3xl" />
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center shadow-md shrink-0">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 9l10.5-3m0 6.553v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 11-.99-3.467l2.31-.66a2.25 2.25 0 001.632-2.163zm0 0V2.25L9 5.25v10.303m0 0v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 01-.99-3.467l2.31-.66A2.25 2.25 0 009 15.553z" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-blue-400 uppercase tracking-wider">
+                    {lang === "fa" ? "سه‌شنبه" : "Tuesday"}
+                  </p>
+                  <h3 className="font-bold text-[#0f2554] text-lg">{t.home.online_tuesday_title}</h3>
+                </div>
+              </div>
+              <p className="text-gray-600 text-sm leading-relaxed">{t.home.online_tuesday_desc}</p>
+            </div>
+
+            {/* Thursday */}
+            <div className="group relative bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-100 rounded-3xl p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 to-orange-400 rounded-t-3xl" />
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-amber-500 rounded-2xl flex items-center justify-center shadow-md shrink-0">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-amber-500 uppercase tracking-wider">
+                    {lang === "fa" ? "پنج‌شنبه" : "Thursday"}
+                  </p>
+                  <h3 className="font-bold text-[#0f2554] text-lg">{t.home.online_thursday_title}</h3>
+                </div>
+              </div>
+              <p className="text-gray-600 text-sm leading-relaxed">{t.home.online_thursday_desc}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── TEAM PREVIEW ── */}
       <section className="py-24 px-4 bg-white border-t border-gray-100">
         <div className="max-w-6xl mx-auto">
