@@ -7,6 +7,10 @@ import Footer from "@/components/Footer";
 export const metadata: Metadata = {
   title: "Abe Hayaat Retreat | آب حیات",
   description: "Register for the Abe Hayaat spiritual retreat. ثبت‌نام برای ریتریت معنوی آب حیات.",
+  icons: {
+    icon: "/logo.svg",
+    apple: "/logo.svg",
+  },
 };
 
 export const viewport: Viewport = {
