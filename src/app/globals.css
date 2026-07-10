@@ -4,8 +4,11 @@
 
 @layer base {
   :root {
-    --color-primary: #1e40af;
-    --color-gold: #c9a84c;
+    --color-primary: #0f2554;
+    --color-navy: #0f2554;
+    --color-navy-dark: #081832;
+    --color-navy-light: #1a3a6e;
+    --color-gold: #f0a500;
   }
 
   * {
@@ -28,23 +31,23 @@
 
 @layer components {
   .btn-primary {
-    @apply bg-blue-700 hover:bg-blue-800 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg;
+    @apply inline-flex items-center justify-center gap-2 bg-[#0f2554] hover:bg-[#1a3a6e] active:bg-[#081832] text-white font-semibold px-6 py-3 rounded-2xl transition-all duration-200 shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0;
   }
 
   .btn-outline {
-    @apply border-2 border-blue-700 text-blue-700 hover:bg-blue-700 hover:text-white font-semibold px-6 py-3 rounded-xl transition-all duration-200;
+    @apply inline-flex items-center justify-center gap-2 border border-[#0f2554]/30 text-[#0f2554] hover:bg-[#0f2554] hover:text-white font-semibold px-6 py-3 rounded-2xl transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0;
   }
 
   .card {
-    @apply bg-white rounded-2xl shadow-sm border border-gray-100 p-6;
+    @apply bg-white rounded-2xl shadow-sm border border-gray-100/80 p-6;
   }
 
   .input-field {
-    @apply w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white;
+    @apply w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0f2554]/30 focus:border-[#0f2554]/50 transition-all bg-white placeholder:text-gray-400;
   }
 
   .section-title {
-    @apply text-3xl font-bold text-blue-900 mb-2;
+    @apply text-3xl font-bold text-[#0f2554] mb-2;
   }
 
   .section-subtitle {

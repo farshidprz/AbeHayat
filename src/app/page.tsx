@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useLang } from "@/context/LanguageContext";
 import { teamMembers } from "@/lib/teamData";
 
@@ -27,7 +28,7 @@ export default function HomePage() {
         }}
       >
         {/* Dark gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-950/85 via-blue-900/75 to-indigo-950/80" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#081832]/90 via-[#0f2554]/80 to-[#081832]/90" />
 
         {/* Decorative cross */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
@@ -62,15 +63,17 @@ export default function HomePage() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/register"
-              className="bg-amber-400 hover:bg-amber-300 text-blue-950 font-bold px-10 py-4 rounded-2xl text-lg shadow-2xl hover:shadow-amber-400/30 transition-all duration-200 hover:-translate-y-0.5"
+              className="inline-flex items-center justify-center gap-2.5 bg-amber-400 hover:bg-amber-300 active:bg-amber-500 text-[#0a1635] font-semibold px-8 py-3.5 rounded-2xl text-base shadow-lg shadow-amber-400/20 hover:shadow-amber-400/40 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
             >
-              💧 {t.home.register_btn}
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 18a8 8 0 110-16 8 8 0 010 16zm1-8V7h-2v5H8l4 4 4-4h-3z"/></svg>
+              {t.home.register_btn}
             </Link>
             <Link
               href="#about"
-              className="border-2 border-white/30 text-white font-semibold px-10 py-4 rounded-2xl text-lg hover:bg-white/10 hover:border-white/50 transition-all duration-200"
+              className="inline-flex items-center justify-center gap-2 border border-white/25 text-white font-medium px-8 py-3.5 rounded-2xl text-base hover:bg-white/10 hover:border-white/50 transition-all duration-200"
             >
               {t.home.learn_more}
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
             </Link>
           </div>
         </div>
@@ -87,7 +90,7 @@ export default function HomePage() {
       </section>
 
       {/* ── ABOUT ── */}
-      <section id="about" className="py-24 px-4 bg-white">
+      <section id="about" className="py-24 px-4 bg-gradient-to-b from-white to-slate-50">
         <div className="max-w-6xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             {/* Text */}
@@ -95,7 +98,7 @@ export default function HomePage() {
               <p className="text-amber-500 font-bold text-sm tracking-widest uppercase mb-3">
                 ✦ {lang === "fa" ? "درباره ریتریت" : "About the Retreat"}
               </p>
-              <h2 className="text-4xl font-bold text-blue-900 mb-6 leading-tight">
+              <h2 className="text-4xl font-bold text-[#0f2554] mb-6 leading-tight">
                 {t.home.about_title}
               </h2>
               <div className="w-12 h-1 bg-amber-400 mb-6 rounded-full" />
@@ -108,7 +111,7 @@ export default function HomePage() {
 
             {/* Visual card */}
             <div className="relative">
-              <div className="bg-gradient-to-br from-blue-900 to-indigo-900 rounded-3xl p-10 text-white text-center shadow-2xl relative overflow-hidden">
+              <div className="bg-gradient-to-br from-[#0f2554] to-[#1a3a6e] rounded-3xl p-10 text-white text-center shadow-2xl relative overflow-hidden">
                 <div className="absolute inset-0 opacity-10">
                   <div className="absolute top-4 right-4 text-8xl">✝</div>
                   <div className="absolute bottom-4 left-4 text-8xl">✝</div>
@@ -134,25 +137,25 @@ export default function HomePage() {
       </section>
 
       {/* ── FEATURES ── */}
-      <section className="py-24 px-4 bg-gradient-to-b from-slate-50 to-blue-50">
+      <section className="py-24 px-4 bg-[#0f2554]">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-14">
-            <p className="text-amber-500 font-bold text-sm tracking-widest uppercase mb-3">
+            <p className="text-amber-400 font-bold text-sm tracking-widest uppercase mb-3">
               ✦ {lang === "fa" ? "برنامه ریتریت" : "Retreat Program"}
             </p>
-            <h2 className="text-4xl font-bold text-blue-900">{t.home.features_title}</h2>
+            <h2 className="text-4xl font-bold text-white">{t.home.features_title}</h2>
             <div className="w-12 h-1 bg-amber-400 mx-auto mt-4 rounded-full" />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {features.map((f, i) => (
               <div
                 key={i}
-                className="group relative overflow-hidden rounded-2xl bg-white p-8 text-center shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                className="group relative overflow-hidden rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 p-8 text-center hover:bg-white/20 transition-all duration-300 hover:-translate-y-1"
               >
-                <div className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${f.color}`} />
+                <div className={`absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r ${f.color}`} />
                 <div className="text-5xl mb-4">{f.icon}</div>
-                <h3 className="font-bold text-blue-900 text-lg mb-2">{f.title}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed">{f.desc}</p>
+                <h3 className="font-bold text-white text-lg mb-2">{f.title}</h3>
+                <p className="text-blue-200 text-sm leading-relaxed">{f.desc}</p>
               </div>
             ))}
           </div>
@@ -160,13 +163,13 @@ export default function HomePage() {
       </section>
 
       {/* ── TEAM PREVIEW ── */}
-      <section className="py-24 px-4 bg-white">
+      <section className="py-24 px-4 bg-white border-t border-gray-100">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-14">
             <p className="text-amber-500 font-bold text-sm tracking-widest uppercase mb-3">
               ✦ {lang === "fa" ? "خادمان" : "Servants"}
             </p>
-            <h2 className="text-4xl font-bold text-blue-900">{t.home.team_preview_title}</h2>
+            <h2 className="text-4xl font-bold text-[#0f2554]">{t.home.team_preview_title}</h2>
             <div className="w-12 h-1 bg-amber-400 mx-auto mt-4 rounded-full" />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
@@ -178,10 +181,10 @@ export default function HomePage() {
                 <div className={`w-20 h-20 ${member.color} rounded-2xl flex items-center justify-center text-white font-bold text-2xl mx-auto mb-4 shadow-md group-hover:scale-105 transition-transform`}>
                   {member.avatar}
                 </div>
-                <h3 className="font-bold text-gray-800 mb-1">
+                <h3 className="font-bold text-[#0f2554] mb-1">
                   {lang === "fa" ? member.nameFa : member.nameEn}
                 </h3>
-                <p className="text-blue-600 text-sm mb-3">
+                <p className="text-amber-600 text-sm mb-3">
                   {lang === "fa" ? member.roleFa : member.roleEn}
                 </p>
                 <div className="flex justify-center gap-2">
@@ -208,7 +211,7 @@ export default function HomePage() {
       </section>
 
       {/* ── CTA ── */}
-      <section className="relative py-24 px-4 overflow-hidden">
+      <section className="relative py-28 px-4 overflow-hidden">
         <div
           className="absolute inset-0"
           style={{
@@ -217,16 +220,27 @@ export default function HomePage() {
             backgroundPosition: "center",
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-950/90 to-indigo-900/90" />
-        <div className="relative z-10 max-w-3xl mx-auto text-center text-white">
-          <div className="text-5xl mb-6">✝</div>
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">{t.home.cta_title}</h2>
-          <p className="text-blue-100 text-lg mb-10">{t.home.cta_desc}</p>
+        {/* Strong overlay for readability */}
+        <div className="absolute inset-0 bg-[#050f24]/85" />
+        {/* Subtle vignette */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20" />
+
+        <div className="relative z-10 max-w-2xl mx-auto text-center">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-white/10 border border-white/15 mb-8 backdrop-blur-sm">
+            <svg className="w-6 h-6 text-amber-300" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+            </svg>
+          </div>
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-5 leading-tight tracking-tight">
+            {t.home.cta_title}
+          </h2>
+          <p className="text-blue-100/80 text-lg mb-10 leading-relaxed">{t.home.cta_desc}</p>
           <Link
             href="/register"
-            className="bg-amber-400 hover:bg-amber-300 text-blue-950 font-bold px-12 py-5 rounded-2xl text-xl shadow-2xl hover:shadow-amber-400/30 transition-all inline-block hover:-translate-y-0.5"
+            className="inline-flex items-center gap-2.5 bg-amber-400 hover:bg-amber-300 active:bg-amber-500 text-[#0a1635] font-semibold px-10 py-4 rounded-2xl text-base shadow-xl shadow-amber-400/15 hover:shadow-amber-400/30 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
           >
-            💧 {t.home.cta_btn}
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+            {t.home.cta_btn}
           </Link>
         </div>
       </section>

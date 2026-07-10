@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createHash } from "crypto";
 import nodemailer from "nodemailer";
 import { createClient } from "@supabase/supabase-js";
+import { localInsert, localGetAll } from "@/lib/localStore";
 
 function validateToken(token: string): boolean {
   const adminPass = process.env.ADMIN_PASSWORD || "Abehayat123.";
@@ -13,7 +14,9 @@ function validateToken(token: string): boolean {
 function getSupabase() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  // Reject placeholder values
   if (!url || !key) return null;
+  if (url.includes("your-project") || key === "your-anon-key") return null;
   return createClient(url, key);
 }
 
@@ -117,7 +120,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    // Save to Supabase
+    // Save to Supabase or local file fallback
     const supabase = getSupabase();
     let dbId: string | null = null;
     if (supabase) {
@@ -132,25 +135,39 @@ export async function POST(req: NextRequest) {
         .select("id")
         .single();
       if (!error && data) dbId = data.id;
+    } else {
+      // Fallback: save to local JSON file
+      const record = await localInsert({
+        first_name, last_name, gender: gender || null, address, phone,
+        email: email || null, country: country || null, city: city || null,
+        church_name: church_name || null, prev_retreat: prev_retreat || null,
+        special_needs: special_needs || null, accepted_rules: true,
+      });
+      dbId = record.id;
     }
 
-    // Send email
+    // Send email (non-fatal — registration succeeds even if email fails)
     const gmailUser = process.env.GMAIL_USER;
     const gmailPass = process.env.GMAIL_PASS;
     const adminEmail = process.env.ADMIN_EMAIL || gmailUser;
+    const emailConfigured = gmailUser && gmailPass &&
+      !gmailUser.includes("your-email") && gmailPass !== "your-app-password";
 
-    if (gmailUser && gmailPass && adminEmail) {
-      const transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: { user: gmailUser, pass: gmailPass },
-      });
-
-      await transporter.sendMail({
-        from: `"آب حیات - ثبت‌نام" <${gmailUser}>`,
-        to: adminEmail,
-        subject: `✅ ثبت‌نام جدید: ${first_name} ${last_name}`,
-        html: buildEmailHtml({ first_name, last_name, gender, address, phone, email, country, city, church_name, prev_retreat, special_needs }),
-      });
+    if (emailConfigured && adminEmail) {
+      try {
+        const transporter = nodemailer.createTransport({
+          service: "gmail",
+          auth: { user: gmailUser, pass: gmailPass },
+        });
+        await transporter.sendMail({
+          from: `"آب حیات - ثبت‌نام" <${gmailUser}>`,
+          to: adminEmail,
+          subject: `✅ ثبت‌نام جدید: ${first_name} ${last_name}`,
+          html: buildEmailHtml({ first_name, last_name, gender, address, phone, email, country, city, church_name, prev_retreat, special_needs }),
+        });
+      } catch (emailErr) {
+        console.warn("Email send failed (non-fatal):", emailErr);
+      }
     }
 
     return NextResponse.json({ success: true, id: dbId });
@@ -169,7 +186,9 @@ export async function GET(req: NextRequest) {
 
   const supabase = getSupabase();
   if (!supabase) {
-    return NextResponse.json({ data: [] });
+    // Fallback: read from local JSON file
+    const data = await localGetAll();
+    return NextResponse.json({ data });
   }
 
   const { data, error } = await supabase
