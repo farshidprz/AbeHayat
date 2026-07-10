@@ -61,9 +61,9 @@ export async function dbSelect(
   table: string,
   params: Record<string, string> = {}
 ): Promise<{ data: SupabaseRow[] | null; error: string | null }> {
-  // SELECT requires service role key — admin only
-  const cfg = getServiceConfig();
-  if (!cfg) return { data: null, error: "Admin database key not configured" };
+  // Prefer service key for reads; fall back to anon key (protected at API layer by admin token)
+  const cfg = getServiceConfig() ?? getAnonConfig();
+  if (!cfg) return { data: null, error: "Supabase not configured" };
 
   const qs = new URLSearchParams({ select: "*", order: "created_at.desc", ...params });
   const res = await fetch(`${cfg.url}/rest/v1/${table}?${qs}`, {
@@ -84,9 +84,8 @@ export async function dbUpdate(
   id: string,
   row: SupabaseRow
 ): Promise<{ data: SupabaseRow | null; error: string | null }> {
-  // UPDATE requires service role key — admin only
-  const cfg = getServiceConfig();
-  if (!cfg) return { data: null, error: "Admin database key not configured" };
+  const cfg = getServiceConfig() ?? getAnonConfig();
+  if (!cfg) return { data: null, error: "Supabase not configured" };
 
   const res = await fetch(`${cfg.url}/rest/v1/${table}?id=eq.${id}`, {
     method: "PATCH",
@@ -107,9 +106,8 @@ export async function dbDelete(
   table: string,
   id: string
 ): Promise<{ error: string | null }> {
-  // DELETE requires service role key — admin only
-  const cfg = getServiceConfig();
-  if (!cfg) return { error: "Admin database key not configured" };
+  const cfg = getServiceConfig() ?? getAnonConfig();
+  if (!cfg) return { error: "Supabase not configured" };
 
   const res = await fetch(`${cfg.url}/rest/v1/${table}?id=eq.${id}`, {
     method: "DELETE",
