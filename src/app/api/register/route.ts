@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createHash } from "crypto";
 import nodemailer from "nodemailer";
-import { createClient } from "@supabase/supabase-js";
+import { dbInsert, dbSelect, isConfigured } from "@/lib/supabaseRest";
 import { localInsert, localGetAll } from "@/lib/localStore";
 
 function validateToken(token: string): boolean {
@@ -9,15 +9,6 @@ function validateToken(token: string): boolean {
   const secret = process.env.ADMIN_SECRET || "abehayat-secret";
   const expected = createHash("sha256").update(adminPass + secret).digest("hex");
   return token === expected;
-}
-
-function getSupabase() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  // Reject placeholder values
-  if (!url || !key) return null;
-  if (url.includes("your-project") || key === "your-anon-key") return null;
-  return createClient(url, key);
 }
 
 function buildEmailHtml(data: {
@@ -120,32 +111,22 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    // Save to Supabase or local file fallback
-    const supabase = getSupabase();
+    // Save to Supabase (direct REST) or local file fallback
     let dbId: string | null = null;
-    if (supabase) {
-      const { data, error } = await supabase
-        .from("registrations")
-        .insert([{
-          first_name, last_name, gender: gender || null, address, phone,
-          email: email || null, country: country || null, city: city || null,
-          church_name: church_name || null, prev_retreat: prev_retreat || null,
-          special_needs: special_needs || null, accepted_rules: true,
-        }])
-        .select("id")
-        .single();
-
+    if (isConfigured()) {
+      const { data, error } = await dbInsert("registrations", {
+        first_name, last_name, gender: gender || null, address, phone,
+        email: email || null, country: country || null, city: city || null,
+        church_name: church_name || null, prev_retreat: prev_retreat || null,
+        special_needs: special_needs || null, accepted_rules: true,
+      });
       if (error) {
-        console.error("Supabase insert error:", error.message, error.code);
-        // Return a clear error so we know what's wrong
-        return NextResponse.json(
-          { error: "Database error: " + error.message, code: error.code },
-          { status: 500 }
-        );
+        console.error("Supabase insert error:", error);
+        return NextResponse.json({ error: "Database error: " + error }, { status: 500 });
       }
-      if (data) dbId = data.id;
+      if (data?.id) dbId = data.id as string;
     } else {
-      // Fallback: save to local JSON file (only works in local dev)
+      // Fallback: local JSON file (only works in local dev)
       try {
         const record = await localInsert({
           first_name, last_name, gender: gender || null, address, phone,
@@ -198,18 +179,12 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const supabase = getSupabase();
-  if (!supabase) {
-    // Fallback: read from local JSON file
+  if (!isConfigured()) {
     const data = await localGetAll();
     return NextResponse.json({ data });
   }
 
-  const { data, error } = await supabase
-    .from("registrations")
-    .select("*")
-    .order("created_at", { ascending: false });
-
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  const { data, error } = await dbSelect("registrations");
+  if (error) return NextResponse.json({ error }, { status: 500 });
   return NextResponse.json({ data });
 }
