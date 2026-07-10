@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createHash } from "crypto";
 import nodemailer from "nodemailer";
-import { query, queryOne, isDbConfigured } from "@/lib/db";
+import { dbInsert, dbSelect, isConfigured } from "@/lib/supabaseRest";
 import { localInsert, localGetAll } from "@/lib/localStore";
 
 function validateToken(token: string): boolean {
@@ -111,27 +111,22 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    // Save via direct PostgreSQL connection
+    // Save via Supabase REST API
     let dbId: string | null = null;
-    if (isDbConfigured()) {
-      try {
-        const row = await queryOne<{ id: string }>(
-          `INSERT INTO registrations
-            (first_name, last_name, gender, address, phone, email, country, city, church_name, prev_retreat, special_needs, accepted_rules)
-           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
-           RETURNING id`,
-          [first_name, last_name, gender || null, address, phone,
-           email || null, country || null, city || null,
-           church_name || null, prev_retreat || null, special_needs || null, true]
-        );
-        dbId = row?.id ?? null;
-      } catch (dbErr: unknown) {
-        const msg = dbErr instanceof Error ? dbErr.message : String(dbErr);
-        console.error("DB insert error:", msg);
-        return NextResponse.json({ error: "Database error: " + msg }, { status: 500 });
+    if (isConfigured()) {
+      const { data, error } = await dbInsert("registrations", {
+        first_name, last_name, gender: gender || null, address, phone,
+        email: email || null, country: country || null, city: city || null,
+        church_name: church_name || null, prev_retreat: prev_retreat || null,
+        special_needs: special_needs || null, accepted_rules: true,
+      });
+      if (error) {
+        console.error("DB insert error:", error);
+        return NextResponse.json({ error: "Database error: " + error }, { status: 500 });
       }
+      if (data?.id) dbId = data.id as string;
     } else {
-      // Fallback: local JSON file (only for local dev without DATABASE_URL)
+      // Fallback: local JSON (local dev only)
       try {
         const record = await localInsert({
           first_name, last_name, gender: gender || null, address, phone,
@@ -142,7 +137,7 @@ export async function POST(req: NextRequest) {
         dbId = record.id;
       } catch (localErr) {
         console.error("Local store error:", localErr);
-        return NextResponse.json({ error: "DATABASE_URL not configured" }, { status: 503 });
+        return NextResponse.json({ error: "Database not configured" }, { status: 503 });
       }
     }
 
@@ -184,18 +179,11 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  if (!isDbConfigured()) {
+  if (!isConfigured()) {
     const data = await localGetAll();
     return NextResponse.json({ data });
   }
-
-  try {
-    const data = await query(
-      "SELECT * FROM registrations ORDER BY created_at DESC"
-    );
-    return NextResponse.json({ data });
-  } catch (dbErr: unknown) {
-    const msg = dbErr instanceof Error ? dbErr.message : String(dbErr);
-    return NextResponse.json({ error: msg }, { status: 500 });
-  }
+  const { data, error } = await dbSelect("registrations");
+  if (error) return NextResponse.json({ error }, { status: 500 });
+  return NextResponse.json({ data });
 }
