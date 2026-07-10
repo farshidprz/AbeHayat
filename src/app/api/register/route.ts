@@ -20,10 +20,18 @@ function getSupabase() {
 function buildEmailHtml(data: {
   first_name: string;
   last_name: string;
+  gender?: string;
   address: string;
   phone: string;
   email?: string;
+  country?: string;
+  city?: string;
+  church_name?: string;
+  prev_retreat?: string;
+  special_needs?: string;
 }) {
+  const genderLabel = data.gender === "male" ? "آقا" : data.gender === "female" ? "خانم" : "—";
+  const prevRetreatLabel = data.prev_retreat === "yes" ? "بله" : data.prev_retreat === "no" ? "خیر" : "—";
   return `
 <!DOCTYPE html>
 <html dir="rtl" lang="fa">
@@ -62,14 +70,32 @@ function buildEmailHtml(data: {
         <div class="value">${data.last_name}</div>
       </div>
       <div class="field">
+        <div class="label">جنسیت</div>
+        <div class="value">${genderLabel}</div>
+      </div>
+      <div class="field">
         <div class="label">شماره تلفن</div>
         <div class="value" dir="ltr">${data.phone}</div>
+      </div>
+      ${data.email ? `<div class="field"><div class="label">ایمیل</div><div class="value" dir="ltr">${data.email}</div></div>` : ""}
+      <div class="field">
+        <div class="label">کشور</div>
+        <div class="value">${data.country || "—"}</div>
+      </div>
+      <div class="field">
+        <div class="label">شهر</div>
+        <div class="value">${data.city || "—"}</div>
       </div>
       <div class="field">
         <div class="label">آدرس</div>
         <div class="value">${data.address}</div>
       </div>
-      ${data.email ? `<div class="field"><div class="label">ایمیل</div><div class="value" dir="ltr">${data.email}</div></div>` : ""}
+      ${data.church_name ? `<div class="field"><div class="label">نام کلیسا</div><div class="value">${data.church_name}</div></div>` : ""}
+      <div class="field">
+        <div class="label">قبلاً در ریتریت بوده</div>
+        <div class="value">${prevRetreatLabel}</div>
+      </div>
+      ${data.special_needs ? `<div class="field"><div class="label">نیازهای خاص</div><div class="value">${data.special_needs}</div></div>` : ""}
       <div class="timestamp">
         📅 تاریخ ثبت‌نام: ${new Date().toLocaleString("fa-IR")}
       </div>
@@ -85,7 +111,7 @@ function buildEmailHtml(data: {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { first_name, last_name, address, phone, email } = body;
+    const { first_name, last_name, gender, address, phone, email, country, city, church_name, prev_retreat, special_needs } = body;
 
     if (!first_name || !last_name || !address || !phone) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -97,7 +123,12 @@ export async function POST(req: NextRequest) {
     if (supabase) {
       const { data, error } = await supabase
         .from("registrations")
-        .insert([{ first_name, last_name, address, phone, email: email || null, accepted_rules: true }])
+        .insert([{
+          first_name, last_name, gender: gender || null, address, phone,
+          email: email || null, country: country || null, city: city || null,
+          church_name: church_name || null, prev_retreat: prev_retreat || null,
+          special_needs: special_needs || null, accepted_rules: true,
+        }])
         .select("id")
         .single();
       if (!error && data) dbId = data.id;
@@ -118,7 +149,7 @@ export async function POST(req: NextRequest) {
         from: `"آب حیات - ثبت‌نام" <${gmailUser}>`,
         to: adminEmail,
         subject: `✅ ثبت‌نام جدید: ${first_name} ${last_name}`,
-        html: buildEmailHtml({ first_name, last_name, address, phone, email }),
+        html: buildEmailHtml({ first_name, last_name, gender, address, phone, email, country, city, church_name, prev_retreat, special_needs }),
       });
     }
 

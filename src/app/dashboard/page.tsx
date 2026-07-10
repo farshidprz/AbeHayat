@@ -6,18 +6,30 @@ interface Registration {
   id: string;
   first_name: string;
   last_name: string;
+  gender?: string;
   address: string;
   phone: string;
   email?: string;
+  country?: string;
+  city?: string;
+  church_name?: string;
+  prev_retreat?: string;
+  special_needs?: string;
   created_at: string;
 }
 
 interface EditForm {
   first_name: string;
   last_name: string;
+  gender: string;
   address: string;
   phone: string;
   email: string;
+  country: string;
+  city: string;
+  church_name: string;
+  prev_retreat: string;
+  special_needs: string;
 }
 
 export default function DashboardPage() {
@@ -32,7 +44,7 @@ export default function DashboardPage() {
   const [search, setSearch] = useState("");
 
   const [editTarget, setEditTarget] = useState<Registration | null>(null);
-  const [editForm, setEditForm] = useState<EditForm>({ first_name: "", last_name: "", address: "", phone: "", email: "" });
+  const [editForm, setEditForm] = useState<EditForm>({ first_name: "", last_name: "", gender: "", address: "", phone: "", email: "", country: "", city: "", church_name: "", prev_retreat: "", special_needs: "" });
   const [saving, setSaving] = useState(false);
 
   const [deleteTarget, setDeleteTarget] = useState<Registration | null>(null);
@@ -92,7 +104,12 @@ export default function DashboardPage() {
   // ---- EDIT ----
   const openEdit = (r: Registration) => {
     setEditTarget(r);
-    setEditForm({ first_name: r.first_name, last_name: r.last_name, address: r.address, phone: r.phone, email: r.email || "" });
+    setEditForm({
+      first_name: r.first_name, last_name: r.last_name, gender: r.gender || "",
+      address: r.address, phone: r.phone, email: r.email || "",
+      country: r.country || "", city: r.city || "", church_name: r.church_name || "",
+      prev_retreat: r.prev_retreat || "", special_needs: r.special_needs || "",
+    });
   };
 
   const handleSave = async () => {
@@ -135,9 +152,14 @@ export default function DashboardPage() {
 
   // ---- CSV EXPORT ----
   const exportCSV = () => {
-    const header = ["نام", "نام خانوادگی", "تلفن", "آدرس", "ایمیل", "تاریخ ثبت‌نام"];
+    const header = ["نام", "نام خانوادگی", "جنسیت", "تلفن", "ایمیل", "کشور", "شهر", "آدرس", "نام کلیسا", "قبلاً در ریتریت", "نیازهای خاص", "تاریخ ثبت‌نام"];
     const rows = filtered.map((r) => [
-      r.first_name, r.last_name, r.phone, r.address, r.email || "",
+      r.first_name, r.last_name,
+      r.gender === "male" ? "آقا" : r.gender === "female" ? "خانم" : "",
+      r.phone, r.email || "", r.country || "", r.city || "", r.address,
+      r.church_name || "",
+      r.prev_retreat === "yes" ? "بله" : r.prev_retreat === "no" ? "خیر" : "",
+      r.special_needs || "",
       new Date(r.created_at).toLocaleString("fa-IR"),
     ]);
     const csv = [header, ...rows].map((r) => r.map((v) => `"${v}"`).join(",")).join("\n");
@@ -156,7 +178,10 @@ export default function DashboardPage() {
       r.last_name.toLowerCase().includes(q) ||
       r.phone.includes(q) ||
       r.address.toLowerCase().includes(q) ||
-      (r.email || "").toLowerCase().includes(q)
+      (r.email || "").toLowerCase().includes(q) ||
+      (r.country || "").toLowerCase().includes(q) ||
+      (r.city || "").toLowerCase().includes(q) ||
+      (r.church_name || "").toLowerCase().includes(q)
     );
   });
 
@@ -250,10 +275,22 @@ export default function DashboardPage() {
 
       <div className="max-w-7xl mx-auto px-4 py-6">
         {/* Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
           <div className="card text-center">
             <p className="text-3xl font-bold text-blue-700">{registrations.length}</p>
             <p className="text-gray-500 text-sm mt-1">مجموع ثبت‌نام‌ها</p>
+          </div>
+          <div className="card text-center">
+            <p className="text-3xl font-bold text-blue-500">
+              {registrations.filter(r => r.gender === "male").length}
+            </p>
+            <p className="text-gray-500 text-sm mt-1">آقایان</p>
+          </div>
+          <div className="card text-center">
+            <p className="text-3xl font-bold text-pink-500">
+              {registrations.filter(r => r.gender === "female").length}
+            </p>
+            <p className="text-gray-500 text-sm mt-1">خانم‌ها</p>
           </div>
           <div className="card text-center">
             <p className="text-3xl font-bold text-green-600">
@@ -264,12 +301,6 @@ export default function DashboardPage() {
               }).length}
             </p>
             <p className="text-gray-500 text-sm mt-1">ثبت‌نام امروز</p>
-          </div>
-          <div className="card text-center">
-            <p className="text-3xl font-bold text-purple-600">
-              {registrations.filter(r => r.email).length}
-            </p>
-            <p className="text-gray-500 text-sm mt-1">با ایمیل</p>
           </div>
         </div>
 
@@ -314,7 +345,7 @@ export default function DashboardPage() {
               <table className="w-full">
                 <thead className="bg-gray-50 border-b border-gray-100">
                   <tr>
-                    {["#", "نام کامل", "تلفن", "آدرس", "ایمیل", "تاریخ", "عملیات"].map((h) => (
+                    {["#", "نام کامل", "جنسیت", "تلفن", "کشور / شهر", "آدرس", "تاریخ", "عملیات"].map((h) => (
                       <th key={h} className="text-right px-4 py-3 text-xs font-bold text-gray-500 uppercase">
                         {h}
                       </th>
@@ -326,11 +357,23 @@ export default function DashboardPage() {
                     <tr key={r.id} className="hover:bg-blue-50/50 transition-colors">
                       <td className="px-4 py-3 text-gray-400 text-sm">{i + 1}</td>
                       <td className="px-4 py-3">
-                        <span className="font-semibold text-gray-800">{r.first_name} {r.last_name}</span>
+                        <div className="font-semibold text-gray-800">{r.first_name} {r.last_name}</div>
+                        {r.church_name && <div className="text-xs text-gray-400 mt-0.5">🏛️ {r.church_name}</div>}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
+                          r.gender === "male" ? "bg-blue-100 text-blue-700" :
+                          r.gender === "female" ? "bg-pink-100 text-pink-700" : "bg-gray-100 text-gray-500"
+                        }`}>
+                          {r.gender === "male" ? "آقا" : r.gender === "female" ? "خانم" : "—"}
+                        </span>
                       </td>
                       <td className="px-4 py-3 text-gray-600 text-sm" dir="ltr">{r.phone}</td>
+                      <td className="px-4 py-3 text-gray-600 text-sm">
+                        <div>{r.country || "—"}</div>
+                        {r.city && <div className="text-xs text-gray-400">{r.city}</div>}
+                      </td>
                       <td className="px-4 py-3 text-gray-600 text-sm max-w-[180px] truncate">{r.address}</td>
-                      <td className="px-4 py-3 text-gray-500 text-sm" dir="ltr">{r.email || "—"}</td>
                       <td className="px-4 py-3 text-gray-400 text-xs whitespace-nowrap">
                         {new Date(r.created_at).toLocaleDateString("fa-IR")}
                       </td>
@@ -364,14 +407,18 @@ export default function DashboardPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
           <div className="bg-white rounded-3xl shadow-2xl p-6 w-full max-w-md">
             <h2 className="font-bold text-lg text-gray-800 mb-5">ویرایش اطلاعات</h2>
-            <div className="space-y-4">
+            <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
               {[
                 { key: "first_name", label: "نام" },
                 { key: "last_name", label: "نام خانوادگی" },
-                { key: "phone", label: "تلفن" },
+                { key: "phone", label: "تلفن", ltr: true },
+                { key: "email", label: "ایمیل (اختیاری)", ltr: true },
+                { key: "country", label: "کشور" },
+                { key: "city", label: "شهر" },
                 { key: "address", label: "آدرس" },
-                { key: "email", label: "ایمیل (اختیاری)" },
-              ].map(({ key, label }) => (
+                { key: "church_name", label: "نام کلیسا (اختیاری)" },
+                { key: "special_needs", label: "نیازهای خاص (اختیاری)" },
+              ].map(({ key, label, ltr }) => (
                 <div key={key}>
                   <label className="block text-sm font-semibold text-gray-600 mb-1">{label}</label>
                   <input
@@ -379,10 +426,34 @@ export default function DashboardPage() {
                     value={editForm[key as keyof EditForm]}
                     onChange={(e) => setEditForm((prev) => ({ ...prev, [key]: e.target.value }))}
                     className="input-field"
-                    dir={key === "phone" || key === "email" ? "ltr" : undefined}
+                    dir={ltr ? "ltr" : undefined}
                   />
                 </div>
               ))}
+              <div>
+                <label className="block text-sm font-semibold text-gray-600 mb-1">جنسیت</label>
+                <select
+                  value={editForm.gender}
+                  onChange={(e) => setEditForm((prev) => ({ ...prev, gender: e.target.value }))}
+                  className="input-field"
+                >
+                  <option value="">—</option>
+                  <option value="male">آقا</option>
+                  <option value="female">خانم</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-600 mb-1">قبلاً در ریتریت بوده</label>
+                <select
+                  value={editForm.prev_retreat}
+                  onChange={(e) => setEditForm((prev) => ({ ...prev, prev_retreat: e.target.value }))}
+                  className="input-field"
+                >
+                  <option value="">—</option>
+                  <option value="yes">بله</option>
+                  <option value="no">خیر</option>
+                </select>
+              </div>
             </div>
             <div className="flex gap-3 mt-6">
               <button onClick={() => setEditTarget(null)} className="btn-outline flex-1 text-sm py-2.5">

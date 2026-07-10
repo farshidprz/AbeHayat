@@ -30,11 +30,11 @@ export async function PATCH(
   if (!supabase) return NextResponse.json({ error: "No database" }, { status: 503 });
 
   const body = await req.json();
-  const { first_name, last_name, address, phone, email } = body;
+  const { first_name, last_name, gender, address, phone, email, country, city, church_name, prev_retreat, special_needs } = body;
 
   const { data, error } = await supabase
     .from("registrations")
-    .update({ first_name, last_name, address, phone, email })
+    .update({ first_name, last_name, gender, address, phone, email, country, city, church_name, prev_retreat, special_needs })
     .eq("id", params.id)
     .select()
     .single();
