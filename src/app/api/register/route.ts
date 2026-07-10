@@ -134,16 +134,30 @@ export async function POST(req: NextRequest) {
         }])
         .select("id")
         .single();
-      if (!error && data) dbId = data.id;
+
+      if (error) {
+        console.error("Supabase insert error:", error.message, error.code);
+        // Return a clear error so we know what's wrong
+        return NextResponse.json(
+          { error: "Database error: " + error.message, code: error.code },
+          { status: 500 }
+        );
+      }
+      if (data) dbId = data.id;
     } else {
-      // Fallback: save to local JSON file
-      const record = await localInsert({
-        first_name, last_name, gender: gender || null, address, phone,
-        email: email || null, country: country || null, city: city || null,
-        church_name: church_name || null, prev_retreat: prev_retreat || null,
-        special_needs: special_needs || null, accepted_rules: true,
-      });
-      dbId = record.id;
+      // Fallback: save to local JSON file (only works in local dev)
+      try {
+        const record = await localInsert({
+          first_name, last_name, gender: gender || null, address, phone,
+          email: email || null, country: country || null, city: city || null,
+          church_name: church_name || null, prev_retreat: prev_retreat || null,
+          special_needs: special_needs || null, accepted_rules: true,
+        });
+        dbId = record.id;
+      } catch (localErr) {
+        console.error("Local store error:", localErr);
+        return NextResponse.json({ error: "No database configured" }, { status: 503 });
+      }
     }
 
     // Send email (non-fatal — registration succeeds even if email fails)
