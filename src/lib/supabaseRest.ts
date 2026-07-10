@@ -1,15 +1,26 @@
 // Direct Supabase REST API helper — bypasses supabase-js client issues
 // with the new sb_publishable_ key format
 
-function getConfig() {
+// Anon key: only for public INSERT (registration)
+function getAnonConfig() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
-  const key =
-    process.env.SUPABASE_SERVICE_KEY ??
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ??
-    "";
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
   if (!url || !key || url.includes("your-project") || key === "your-anon-key")
     return null;
   return { url: url.replace(/\/$/, ""), key };
+}
+
+// Service role key: for admin SELECT/UPDATE/DELETE — never sent to browser
+function getServiceConfig() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
+  const key = process.env.SUPABASE_SERVICE_KEY ?? "";
+  if (!url || !key) return null;
+  return { url: url.replace(/\/$/, ""), key };
+}
+
+// For backward compat: prefer service key, fall back to anon
+function getConfig() {
+  return getServiceConfig() ?? getAnonConfig();
 }
 
 function headers(key: string) {
@@ -27,7 +38,8 @@ export async function dbInsert(
   table: string,
   row: SupabaseRow
 ): Promise<{ data: SupabaseRow | null; error: string | null }> {
-  const cfg = getConfig();
+  // INSERT uses anon key — public registration is intentional
+  const cfg = getAnonConfig();
   if (!cfg) return { data: null, error: "Supabase not configured" };
 
   const res = await fetch(`${cfg.url}/rest/v1/${table}`, {
@@ -49,8 +61,9 @@ export async function dbSelect(
   table: string,
   params: Record<string, string> = {}
 ): Promise<{ data: SupabaseRow[] | null; error: string | null }> {
-  const cfg = getConfig();
-  if (!cfg) return { data: null, error: "Supabase not configured" };
+  // SELECT requires service role key — admin only
+  const cfg = getServiceConfig();
+  if (!cfg) return { data: null, error: "Admin database key not configured" };
 
   const qs = new URLSearchParams({ select: "*", order: "created_at.desc", ...params });
   const res = await fetch(`${cfg.url}/rest/v1/${table}?${qs}`, {
@@ -71,8 +84,9 @@ export async function dbUpdate(
   id: string,
   row: SupabaseRow
 ): Promise<{ data: SupabaseRow | null; error: string | null }> {
-  const cfg = getConfig();
-  if (!cfg) return { data: null, error: "Supabase not configured" };
+  // UPDATE requires service role key — admin only
+  const cfg = getServiceConfig();
+  if (!cfg) return { data: null, error: "Admin database key not configured" };
 
   const res = await fetch(`${cfg.url}/rest/v1/${table}?id=eq.${id}`, {
     method: "PATCH",
@@ -93,8 +107,9 @@ export async function dbDelete(
   table: string,
   id: string
 ): Promise<{ error: string | null }> {
-  const cfg = getConfig();
-  if (!cfg) return { error: "Supabase not configured" };
+  // DELETE requires service role key — admin only
+  const cfg = getServiceConfig();
+  if (!cfg) return { error: "Admin database key not configured" };
 
   const res = await fetch(`${cfg.url}/rest/v1/${table}?id=eq.${id}`, {
     method: "DELETE",
@@ -110,5 +125,9 @@ export async function dbDelete(
 }
 
 export function isConfigured(): boolean {
-  return getConfig() !== null;
+  return getAnonConfig() !== null;
+}
+
+export function isAdminConfigured(): boolean {
+  return getServiceConfig() !== null;
 }
