@@ -11,6 +11,8 @@ export interface TeamMember {
   bioFa: string;
   avatar: string; // initials for avatar
   color: string;  // bg color for avatar
+  image?: string; // path to image file
+  type?: "team" | "pastor"; // distinguish pastors from team members
 }
 
 export const teamMembers: TeamMember[] = [
@@ -26,6 +28,8 @@ export const teamMembers: TeamMember[] = [
     bioFa: "خادم متعهد تیم ریتریت آب حیات.",
     avatar: "ع",
     color: "bg-blue-600",
+    image: "/Ali.jpg",
+    type: "team",
   },
   {
     id: 2,
@@ -39,6 +43,8 @@ export const teamMembers: TeamMember[] = [
     bioFa: "خادم متعهد تیم ریتریت آب حیات.",
     avatar: "م",
     color: "bg-purple-600",
+    image: "/mehran.jpg",
+    type: "team",
   },
   {
     id: 3,
@@ -52,6 +58,8 @@ export const teamMembers: TeamMember[] = [
     bioFa: "خادم متعهد تیم ریتریت آب حیات.",
     avatar: "ع‌ر",
     color: "bg-green-600",
+    image: "/Alireza.jpg",
+    type: "team",
   },
   {
     id: 4,
@@ -65,6 +73,8 @@ export const teamMembers: TeamMember[] = [
     bioFa: "خادم متعهد تیم ریتریت آب حیات.",
     avatar: "م‌م",
     color: "bg-rose-600",
+    image: "/maryam.jpg",
+    type: "team",
   },
   {
     id: 5,
@@ -78,6 +88,8 @@ export const teamMembers: TeamMember[] = [
     bioFa: "خادم متعهد تیم ریتریت آب حیات.",
     avatar: "احـ",
     color: "bg-orange-600",
+    image: "/Ahmad.jpg",
+    type: "team",
   },
   {
     id: 6,
@@ -91,6 +103,8 @@ export const teamMembers: TeamMember[] = [
     bioFa: "خادم متعهد تیم ریتریت آب حیات.",
     avatar: "س",
     color: "bg-teal-600",
+    image: "/Sara.jpg",
+    type: "team",
   },
   {
     id: 7,
@@ -104,6 +118,8 @@ export const teamMembers: TeamMember[] = [
     bioFa: "خادم متعهد تیم ریتریت آب حیات.",
     avatar: "مت",
     color: "bg-indigo-600",
+    image: "/Matin.webp",
+    type: "team",
   },
   {
     id: 8,
@@ -117,6 +133,38 @@ export const teamMembers: TeamMember[] = [
     bioFa: "خادم متعهد تیم ریتریت آب حیات.",
     avatar: "ف",
     color: "bg-amber-600",
+    image: "/Farshid.jpg",
+    type: "team",
+  },
+  {
+    id: 10,
+    nameEn: "Roohangiz",
+    nameFa: "روهنگیز",
+    roleEn: "Team Member",
+    roleFa: "عضو تیم",
+    email: "parvizianfarshid@gmail.com",
+    phone: "+49 17650971",
+    bioEn: "Dedicated servant of the Abe Hayaat retreat team.",
+    bioFa: "خادم متعهد تیم ریتریت آب حیات.",
+    avatar: "ر",
+    color: "bg-fuchsia-600",
+    image: "/Roohangiz.jpg",
+    type: "team",
+  },
+  {
+    id: 11,
+    nameEn: "Pastor Daniel",
+    nameFa: "پاستور دانیل",
+    roleEn: "Lead Pastor",
+    roleFa: "پاستور رهبر",
+    email: "parvizianfarshid@gmail.com",
+    phone: "+49 17650971",
+    bioEn: "Lead pastor of Abe Hayaat Church.",
+    bioFa: "پاستور رهبر کلیسای آب حیات.",
+    avatar: "د",
+    color: "bg-red-600",
+    image: "/Pastor.Daniel.jpg",
+    type: "pastor",
   },
 ];
 
