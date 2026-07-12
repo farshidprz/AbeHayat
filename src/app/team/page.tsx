@@ -3,20 +3,28 @@
 import { useLang } from "@/context/LanguageContext";
 import { teamMembers } from "@/lib/teamData";
 
+type TeamMember = (typeof teamMembers)[number];
+
 export default function TeamPage() {
   const { t, lang } = useLang();
-  
+
   const pastors = teamMembers.filter(m => m.type === "pastor");
   const team = teamMembers.filter(m => m.type === "team" || !m.type);
 
-  const TeamMemberCard = ({ member, isPastor = false }) => (
+  const TeamMemberCard = ({
+    member,
+    isPastor = false,
+  }: {
+    member: TeamMember;
+    isPastor?: boolean;
+  }) => (
     <div className="group relative">
       <div className="relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
         {/* Image Container */}
         {member.image ? (
           <div className="relative w-full h-80 overflow-hidden bg-gray-300">
-            <img 
-              src={member.image} 
+            <img
+              src={member.image}
               alt={lang === "fa" ? member.nameFa : member.nameEn}
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
             />
@@ -52,27 +60,47 @@ export default function TeamPage() {
           {lang === "fa" ? member.roleFa : member.roleEn}
         </p>
 
-        {/* Contact Icons */}
         <div className="flex items-center justify-center gap-3 mt-3">
-          <a
-            href={`mailto:${member.email}`}
-            className="w-9 h-9 rounded-lg bg-blue-100 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all duration-200 transform hover:scale-110"
-            title={member.email}
-          >
-            <svg className="w-4 h-4 text-blue-600 hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
-          </a>
-          <a
-            href={`tel:${member.phone}`}
-            className="w-9 h-9 rounded-lg bg-green-100 flex items-center justify-center hover:bg-green-600 hover:text-white transition-all duration-200 transform hover:scale-110"
-            title={member.phone}
-          >
-            <svg className="w-4 h-4 text-green-600 hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-            </svg>
-          </a>
-        </div>
+  <a
+    href={`mailto:${member.email}`}
+    className="w-9 h-9 rounded-lg bg-blue-100 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all duration-200 transform hover:scale-110"
+    title={member.email}
+  >
+    <svg
+      className="w-4 h-4 text-blue-600 hover:text-white transition-colors"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+      />
+    </svg>
+  </a>
+
+  <a
+    href={`tel:${member.phone}`}
+    className="w-9 h-9 rounded-lg bg-green-100 flex items-center justify-center hover:bg-green-600 hover:text-white transition-all duration-200 transform hover:scale-110"
+    title={member.phone}
+  >
+    <svg
+      className="w-4 h-4 text-green-600 hover:text-white transition-colors"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+      />
+    </svg>
+  </a>
+</div>
       </div>
     </div>
   );
